@@ -1,5 +1,6 @@
 #if !defined(CONFIG_h)
 #define CONFIG_h
+#include <Arduino.h>
 
 #define DEBUG_MODE
 

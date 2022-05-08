@@ -2,6 +2,7 @@
 #define ALARMCLOCK_h
 
 #include "myConfig.h"
+#include <Arduino.h>
 
 class alarmClock
 {

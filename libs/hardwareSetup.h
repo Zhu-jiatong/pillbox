@@ -2,7 +2,7 @@
 #define HSETUP_h
 
 #include "myConfig.h"
-
+#include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(lcdAddr, 20, 4); // LCD 1, bridge NONE
