@@ -1,5 +1,6 @@
 #if !defined(CONFIG_h)
 #define CONFIG_h
+
 #include <Arduino.h>
 
 #define DEBUG_MODE
@@ -25,5 +26,8 @@ uint8_t two[]{B11000, B11000, B11000, B11000, B11000, B11000, B11000, B11000};
 uint8_t three[]{B11100, B11100, B11100, B11100, B11100, B11100, B11100, B11100};
 uint8_t four[]{B11110, B11110, B11110, B11110, B11110, B11110, B11110, B11110};
 uint8_t five[]{B11111, B11111, B11111, B11111, B11111, B11111, B11111, B11111};
+
+// macro functions
+#define arrElem(arr) (sizeof(arr) / sizeof(arr[0]))
 
 #endif // CONFIG_h

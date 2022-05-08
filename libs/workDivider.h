@@ -5,7 +5,12 @@
 class workDivider
 {
 public:
-
+    short cycleCount{}, cycleNo{};
+    void doWork();
 } mTask;
 
+void workDivider::doWork()
+{
+    ++cycleNo;
+}
 #endif // WDIVIDER_h

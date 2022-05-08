@@ -9,14 +9,14 @@ class alarmClock
 public:
     struct alarms
     {
-        ulong target{}, current{};
+        unsigned long target{}, current{};
         short state{};
     } alarmDat[9];
     short minIndx{}, prevIndx{};
     void set(short indx, short h, short m);
-    String toStr(ulong milli);
-    ulong toMillis(short h, short m);
-    ulong update(short indx);
+    String toStr(unsigned long milli);
+    unsigned long toMillis(short h, short m);
+    unsigned long update(short indx);
     void sort();
 } alarm;
 
@@ -25,20 +25,20 @@ void alarmClock::set(short indx, short h, short m)
     alarmDat[indx].target = toMillis(h, m);
 }
 
-ulong alarmClock::toMillis(short h, short m)
+unsigned long alarmClock::toMillis(short h, short m)
 {
     return h * HMILLIS + m * MMILLIS;
 }
 
-String alarmClock::toStr(ulong milli)
+String alarmClock::toStr(unsigned long milli)
 {
     int h, m, s;
 
     // conversion
     h = milli / HMILLIS;
-    ulong hLeft = milli % HMILLIS;
+    unsigned long hLeft = milli % HMILLIS;
     m = hLeft / MMILLIS;
-    ulong mLeft = hLeft % MMILLIS;
+    unsigned long mLeft = hLeft % MMILLIS;
     s = mLeft / SMILLIS;
 
     // construct string
@@ -60,12 +60,12 @@ String alarmClock::toStr(ulong milli)
     return hh + ":" + mm + ":" + ss;
 }
 
-ulong alarmClock::update(short indx)
+unsigned long alarmClock::update(short indx)
 {
     switch (indx)
     {
     case RTCINDX:
-        static ulong previousMillis;
+        static unsigned long previousMillis;
         alarmDat[RTCINDX].current = alarmDat[RTCINDX].target + millis() % DAYMILLIS;
         if (alarmDat[RTCINDX].current >= DAYMILLIS)
         {
@@ -85,19 +85,25 @@ ulong alarmClock::update(short indx)
 
 void alarmClock::sort()
 {
-    for (short i = 1; i < sizeof(alarmDat) / sizeof(alarmDat[0]); ++i)
+    unsigned long minTime(DAYMILLIS), // store closest alarm time
+        secMin(DAYMILLIS);            // store second closest alarm time
+    minIndx = prevIndx = 0;           // initialise 2 vars, will remain 0 if no active alarms present
+
+    for (short i = 1; i < arrElem(alarmDat); ++i) // 1st for-loop: find closest alarm to run
     {
-        short minIndex = 9;
-        ulong minTime(DAYMILLIS);
-        if (alarmDat[i].target < minTime)
+        if (alarmDat[i].target != 0 && alarmDat[i].target < minTime)
         {
             minTime = alarmDat[i].target;
-            minIndex = i;
+            minIndx = i;
         }
-        if (minIndex != minIndx)
+    }
+
+    for (short i = 0; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm
+    {
+        if (alarmDat[i].target != 0 && alarmDat[i].target < secMin && alarmDat[i].target > minTime)
         {
-            prevIndx = minIndx;
-            minIndx = minIndex;
+            secMin = alarmDat[i].target;
+            prevIndx = i;
         }
     }
 }
