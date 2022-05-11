@@ -7,22 +7,37 @@
 class alarmClock
 {
 public:
+    enum states
+    {
+        RUN,
+        EXPI,
+        ACK
+    };
     struct alarms
     {
         unsigned long target{}, current{};
-        short state{};
+        states state{};
     } alarmDat[9];
+    unsigned long rawMillis{};
     short minIndx{}, prevIndx{};
     void set(short indx, short h, short m);
     String toStr(unsigned long milli);
     unsigned long toMillis(short h, short m);
     unsigned long update(short indx);
     void sort();
+    bool isExpire();
+    void ackno();
 } alarm;
 
 void alarmClock::set(short indx, short h, short m)
 {
-    alarmDat[indx].target = toMillis(h, m);
+    unsigned long tempTarget = toMillis(h, m);
+    if (indx == RTCINDX) // set time of RTC
+        alarmDat[indx].target = (rawMillis > tempTarget) ? (rawMillis - tempTarget) : (tempTarget - rawMillis);
+    else // set time of alarms
+        alarmDat[indx].target = tempTarget;
+    alarmDat[indx].state = RUN;
+    sort();
 }
 
 unsigned long alarmClock::toMillis(short h, short m)
@@ -32,31 +47,23 @@ unsigned long alarmClock::toMillis(short h, short m)
 
 String alarmClock::toStr(unsigned long milli)
 {
-    int h, m, s;
-
     // conversion
-    h = milli / HMILLIS;
+    short h = milli / HMILLIS;
     unsigned long hLeft = milli % HMILLIS;
-    m = hLeft / MMILLIS;
+    short m = hLeft / MMILLIS;
     unsigned long mLeft = hLeft % MMILLIS;
-    s = mLeft / SMILLIS;
+    short s = mLeft / SMILLIS;
 
     // construct string
     String hh = String(h, DEC);
     if (h < 10)
-    {
         hh = "0" + hh;
-    }
     String mm = String(m, DEC);
     if (m < 10)
-    {
         mm = "0" + mm;
-    }
     String ss = String(s, DEC);
     if (s < 10)
-    {
         ss = "0" + ss;
-    }
     return hh + ":" + mm + ":" + ss;
 }
 
@@ -64,20 +71,21 @@ unsigned long alarmClock::update(short indx)
 {
     switch (indx)
     {
-    case RTCINDX:
-        static unsigned long previousMillis;
-        alarmDat[RTCINDX].current = alarmDat[RTCINDX].target + millis() % DAYMILLIS;
+    case RTCINDX: // update RTC time, use index 0
+        rawMillis = millis() % DAYMILLIS;
+        alarmDat[RTCINDX].current = alarmDat[RTCINDX].target + rawMillis;
         if (alarmDat[RTCINDX].current >= DAYMILLIS)
-        {
             alarmDat[RTCINDX].target = 0;
-        }
         return alarmDat[RTCINDX].current;
         break;
 
-    default:
-        if (alarmDat[indx].target >= alarmDat[RTCINDX].current)
-        {
+    default:                                                    // update other alarms' time
+        if (alarmDat[indx].target >= alarmDat[RTCINDX].current) // check if alarm expires
             alarmDat[indx].current = alarmDat[indx].target - alarmDat[RTCINDX].current;
+        else // when the alarm expires
+        {
+            alarmDat[indx].state = alarmDat[indx].state == RUN ? EXPI : alarmDat[indx].state;
+            sort(); // sort the alarm so that the next alarm is ready when needed
         }
         break;
     }
@@ -91,7 +99,7 @@ void alarmClock::sort()
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 1st for-loop: find closest alarm to run
     {
-        if (alarmDat[i].target != 0 && alarmDat[i].target < minTime)
+        if (alarmDat[i].target != 0 && alarmDat[i].target < minTime && alarmDat[i].state == RUN)
         {
             minTime = alarmDat[i].target;
             minIndx = i;
@@ -100,12 +108,29 @@ void alarmClock::sort()
 
     for (short i = 0; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm
     {
-        if (alarmDat[i].target != 0 && alarmDat[i].target < secMin && alarmDat[i].target > minTime)
+        if (alarmDat[i].target != 0 && alarmDat[i].target < secMin && alarmDat[i].state != RUN)
         {
             secMin = alarmDat[i].target;
             prevIndx = i;
         }
     }
+}
+
+bool alarmClock::isExpire()
+{
+    bool temp(false);
+    for (short i = 1; i < arrElem(alarmDat); ++i)
+    {
+        if (alarmDat[i].state == EXPI)
+            temp = true;
+    }
+    return temp;
+}
+
+void ackno()
+{
+    for (short i = 0; i < arrElem(alarm.alarmDat); ++i)
+        alarm.alarmDat[i].state = alarm.alarmDat[i].state == alarm.EXPI ? alarm.ACK : alarm.alarmDat[i].state;
 }
 
 #endif // ALARMCLOCK_h

@@ -2,6 +2,7 @@
 #define HSETUP_h
 
 #include "myConfig.h"
+#include "alarmClock.h"
 #include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -14,7 +15,7 @@ void lcdSetup()
 {
     lcd.init();
     lcd.backlight();
-    // lcd progress bar init
+    // lcd progress bar chars init
     lcd.createChar(0, zero);
     lcd.createChar(1, one);
     lcd.createChar(2, two);
@@ -33,6 +34,7 @@ void hardwareInit()
 
     lcdSetup();
     dht.begin();
+    attachInterrupt(buttonPin, ackno, RISING);
 }
 
 #endif // HSETUP_h

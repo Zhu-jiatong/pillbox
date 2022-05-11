@@ -5,7 +5,13 @@
 void setup()
 {
     hardwareInit();
-    alarm.set(0, 0, 0);
+    alarm.set(RTCINDX, 0, 10);
+    alarm.set(4, 4, 15);
+    alarm.set(1, 0, 3);
+    alarm.set(3, 5, 10);
 }
 
-void loop() {}
+void loop()
+{
+    mTask.doWork();
+}

@@ -5,19 +5,21 @@
 
 #define DEBUG_MODE
 
-// utility constants (pins...)
+// pins and hardware
 constexpr auto noOfAlarm(8);
 constexpr auto lcdAddr(0x27);
 constexpr auto ledPin(13);
+constexpr auto buttonPin(5);
 constexpr auto DHTPIN(6);
 constexpr auto DHTTYPE(22); // DHT22
 
 // time constants
-constexpr auto HMILLIS(3600000);
-constexpr auto MMILLIS(60000);
-constexpr auto SMILLIS(1000);
-constexpr auto RTCINDX(0);
-constexpr auto DAYMILLIS(24 * HMILLIS);
+constexpr short ledFreq(250);
+constexpr unsigned long HMILLIS(3600000);
+constexpr unsigned long MMILLIS(60000);
+constexpr unsigned long SMILLIS(1000);
+constexpr unsigned long DAYMILLIS(24 * HMILLIS);
+constexpr short RTCINDX(0);
 
 // LCD custom chars
 uint8_t zero[]{B00000, B00000, B00000, B00000, B00000, B00000, B00000, B00000};
