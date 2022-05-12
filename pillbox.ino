@@ -2,16 +2,22 @@
 #include "libs\hardwareSetup.h"
 #include "libs\workDivider.h"
 
+#if defined(NODEMCU)
+#include "libs\espConfig.h"
+#endif // NODEMCU
+
 void setup()
 {
     hardwareInit();
-    alarm.set(RTCINDX, 0, 10);
-    alarm.set(4, 4, 15);
-    alarm.set(1, 0, 3);
-    alarm.set(3, 5, 10);
+    startWifi();
 }
 
 void loop()
 {
     mTask.doWork();
+
+#if defined(NODEMCU)
+    dnsServer.processNextRequest();
+    server.handleClient(); // Listen for HTTP requests from clients
+#endif                     // NODEMCU
 }

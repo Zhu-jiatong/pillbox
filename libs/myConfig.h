@@ -3,15 +3,24 @@
 
 #include <Arduino.h>
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
+#define NODEMCU
 
 // pins and hardware
-constexpr auto noOfAlarm(8);
 constexpr auto lcdAddr(0x27);
-constexpr auto ledPin(13);
+constexpr auto DHTTYPE(22); // DHT22
+constexpr auto noOfAlarm(8);
+constexpr auto ledPin(LED_BUILTIN);
+
+#if defined(NANO_EVERY)
 constexpr auto buttonPin(5);
 constexpr auto DHTPIN(6);
-constexpr auto DHTTYPE(22); // DHT22
+#endif // NANO_EVERY
+#if defined(NODEMCU) // do not use D1(SCL), D2(SDA), D14, D9, D10, D13, D11, D12
+constexpr auto buttonPin(D7);
+constexpr auto DHTPIN(D8);
+constexpr char *ssid = "Pillbox"; // The name of the Wi-Fi network that will be created
+#endif // NODEMCU
 
 // time constants
 constexpr short ledFreq(250);

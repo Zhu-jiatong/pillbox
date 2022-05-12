@@ -15,7 +15,7 @@ public:
     };
     struct alarms
     {
-        unsigned long target{}, current{};
+        unsigned long current{}, target{};
         states state{};
     } alarmDat[9];
     unsigned long rawMillis{};
@@ -27,17 +27,25 @@ public:
     void sort();
     bool isExpire();
     void ackno();
+    void scanRefresh();
 } alarm;
 
 void alarmClock::set(short indx, short h, short m)
 {
     unsigned long tempTarget = toMillis(h, m);
-    if (indx == RTCINDX) // set time of RTC
+    switch (indx)
+    {
+    case RTCINDX:
         alarmDat[indx].target = (rawMillis > tempTarget) ? (rawMillis - tempTarget) : (tempTarget - rawMillis);
-    else // set time of alarms
+        scanRefresh();
+        break;
+
+    default:
         alarmDat[indx].target = tempTarget;
-    alarmDat[indx].state = RUN;
-    sort();
+        alarmDat[indx].state = RUN;
+        sort();
+        break;
+    }
 }
 
 unsigned long alarmClock::toMillis(short h, short m)
@@ -127,10 +135,27 @@ bool alarmClock::isExpire()
     return temp;
 }
 
+void alarmClock::scanRefresh()
+{
+    for (short i = 0; i < arrElem(alarmDat); ++i)
+    {
+        if (alarmDat[i].target >= alarmDat[RTCINDX].current)
+            alarmDat[i].state = RUN;
+    }
+}
+
+#if defined(NODEMCU)
+void ICACHE_RAM_ATTR ackno()
+{
+    for (short i = 0; i < arrElem(alarm.alarmDat); ++i)
+        alarm.alarmDat[i].state = alarm.alarmDat[i].state == alarm.EXPI ? alarm.ACK : alarm.alarmDat[i].state;
+}
+#else
 void ackno()
 {
     for (short i = 0; i < arrElem(alarm.alarmDat); ++i)
         alarm.alarmDat[i].state = alarm.alarmDat[i].state == alarm.EXPI ? alarm.ACK : alarm.alarmDat[i].state;
 }
+#endif // NODEMCU
 
 #endif // ALARMCLOCK_h

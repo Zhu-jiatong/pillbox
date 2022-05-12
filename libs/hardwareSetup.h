@@ -34,7 +34,7 @@ void hardwareInit()
 
     lcdSetup();
     dht.begin();
-    attachInterrupt(buttonPin, ackno, RISING);
+    attachInterrupt(digitalPinToInterrupt(buttonPin), ackno, RISING);
 }
 
 #endif // HSETUP_h
