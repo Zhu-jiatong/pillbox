@@ -15,7 +15,8 @@ public:
     };
     struct alarms
     {
-        unsigned long current{}, target{};
+        unsigned long current{};
+        long target{};
         states state{};
     } alarmDat[9];
     unsigned long rawMillis{};
@@ -36,7 +37,7 @@ void alarmClock::set(short indx, short h, short m)
     switch (indx)
     {
     case RTCINDX:
-        alarmDat[indx].target = (rawMillis > tempTarget) ? (rawMillis - tempTarget) : (tempTarget - rawMillis);
+        alarmDat[indx].target = tempTarget - rawMillis;
         scanRefresh();
         break;
 
@@ -81,9 +82,7 @@ unsigned long alarmClock::update(short indx)
     {
     case RTCINDX: // update RTC time, use index 0
         rawMillis = millis() % DAYMILLIS;
-        alarmDat[RTCINDX].current = alarmDat[RTCINDX].target + rawMillis;
-        if (alarmDat[RTCINDX].current >= DAYMILLIS)
-            alarmDat[RTCINDX].target = 0;
+        alarmDat[RTCINDX].current = (millis() + alarmDat[RTCINDX].target) % DAYMILLIS;
         return alarmDat[RTCINDX].current;
         break;
 
