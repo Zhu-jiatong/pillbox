@@ -38,7 +38,6 @@ void alarmClock::set(short indx, short h, short m)
     {
     case RTCINDX:
         alarmDat[indx].target = tempTarget - rawMillis;
-        scanRefresh();
         break;
 
     default:
@@ -115,7 +114,7 @@ void alarmClock::sort()
 
     for (short i = 0; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm
     {
-        if (alarmDat[i].target != 0 && alarmDat[i].target < secMin && alarmDat[i].state != RUN)
+        if (alarmDat[i].target != 0 && alarmDat[i].target > secMin && alarmDat[i].state != RUN)
         {
             secMin = alarmDat[i].target;
             prevIndx = i;

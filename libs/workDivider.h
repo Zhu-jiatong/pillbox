@@ -19,6 +19,7 @@ void workDivider::doWork()
     {
     case 0:
         alarm.update(RTCINDX);
+        alarm.scanRefresh();
         break;
 
     case 1:
@@ -31,6 +32,7 @@ void workDivider::doWork()
 
     case 2:
         alarm.update(alarm.minIndx);
+        alarm.sort();
         break;
 
     case 3:

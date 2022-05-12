@@ -8,22 +8,21 @@
 class display
 {
 public:
-    String l1, l2, l3, r1, r2, r3;
     void refresh();
     void progressBar(short ln, unsigned long max, unsigned long pos);
 } screen;
 
 void display::refresh()
 {
-    l1 = "Prev: " + String(alarm.prevIndx);
+    String l1 = "Prev: " + String(alarm.prevIndx);
     lcd.setCursor(0, 0);
     lcd.print(l1);
 
-    l2 = "Next: " + String(alarm.minIndx);
+    String l2 = "Next: " + String(alarm.minIndx);
     lcd.setCursor(0, 1);
     lcd.print(l2);
 
-    l3 = alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "0";
+    String l3 = alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "0";
     lcd.setCursor(0, 2);
     lcd.print(l3);
 
@@ -33,11 +32,11 @@ void display::refresh()
     lcd.setCursor(11, 0); // r1
     lcd.print(alarm.toStr(alarm.alarmDat[RTCINDX].current));
 
-    r2 = "T: " + String(dht.readTemperature()) + "C";
+    String r2 = "T: " + String(dht.readTemperature()) + "C";
     lcd.setCursor(11, 1);
     lcd.print(r2);
 
-    r3 = "H: " + String(dht.readHumidity()) + "%";
+    String r3 = "H: " + String(dht.readHumidity()) + "%";
     lcd.setCursor(11, 2);
     lcd.print(r3);
 }
