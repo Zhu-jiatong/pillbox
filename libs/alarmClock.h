@@ -100,7 +100,7 @@ unsigned long alarmClock::update(short indx)
 void alarmClock::sort()
 {
     unsigned long minTime(DAYMILLIS), // store closest alarm time
-        secMin(DAYMILLIS);            // store second closest alarm time
+        secMin{};            // store second closest alarm time
     minIndx = prevIndx = 0;           // initialise 2 vars, will remain 0 if no active alarms present
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 1st for-loop: find closest alarm to run
@@ -112,9 +112,9 @@ void alarmClock::sort()
         }
     }
 
-    for (short i = 0; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm
+    for (short i = 1; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm
     {
-        if (alarmDat[i].target != 0 && alarmDat[i].target > secMin && alarmDat[i].state != RUN)
+        if (alarmDat[i].target && alarmDat[i].target > secMin && alarmDat[i].state != RUN)
         {
             secMin = alarmDat[i].target;
             prevIndx = i;
@@ -135,7 +135,7 @@ bool alarmClock::isExpire()
 
 void alarmClock::scanRefresh()
 {
-    for (short i = 0; i < arrElem(alarmDat); ++i)
+    for (short i = 1; i < arrElem(alarmDat); ++i)
     {
         if (alarmDat[i].target >= alarmDat[RTCINDX].current)
             alarmDat[i].state = RUN;
@@ -145,13 +145,13 @@ void alarmClock::scanRefresh()
 #if defined(NODEMCU)
 void ICACHE_RAM_ATTR ackno()
 {
-    for (short i = 0; i < arrElem(alarm.alarmDat); ++i)
+    for (short i = 1; i < arrElem(alarm.alarmDat); ++i)
         alarm.alarmDat[i].state = alarm.alarmDat[i].state == alarm.EXPI ? alarm.ACK : alarm.alarmDat[i].state;
 }
 #else
 void ackno()
 {
-    for (short i = 0; i < arrElem(alarm.alarmDat); ++i)
+    for (short i = 1; i < arrElem(alarm.alarmDat); ++i)
         alarm.alarmDat[i].state = alarm.alarmDat[i].state == alarm.EXPI ? alarm.ACK : alarm.alarmDat[i].state;
 }
 #endif // NODEMCU

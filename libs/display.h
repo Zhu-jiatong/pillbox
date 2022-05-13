@@ -22,7 +22,7 @@ void display::refresh()
     lcd.setCursor(0, 1);
     lcd.print(l2);
 
-    String l3 = alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "0";
+    String l3 = alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "00:00:00";
     lcd.setCursor(0, 2);
     lcd.print(l3);
 
@@ -71,7 +71,7 @@ void display::progressBar(short ln, unsigned long max, unsigned long pos)
     else
     {
         lcd.setCursor(0, ln);
-        lcd.print("Nice, all done");
+        lcd.print("Nice, all cleared :)");
     }
 }
 
