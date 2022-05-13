@@ -18,7 +18,7 @@ constexpr auto DHTPIN(6);
 #endif // NANO_EVERY
 #if defined(NODEMCU) // do not use D1(SCL), D2(SDA), D14, D9, D10, D13, D11, D12
 constexpr auto buttonPin(D7);
-constexpr auto DHTPIN(D8);
+constexpr auto DHTPIN(D5);
 constexpr char *ssid = "Pillbox"; // The name of the Wi-Fi network that will be created
 #endif // NODEMCU
 
