@@ -9,7 +9,7 @@ const byte DNS_PORT = 53;
 DNSServer dnsServer;
 
 #include <ESP8266WiFi.h>
-IPAddress apIP(192, 168, 1, 1);
+// IPAddress apIP(192, 168, 1, 1);
 
 #include <ESP8266WebServer.h>
 ESP8266WebServer server(80); // Create a webserver object that listens for HTTP request on port 80
@@ -39,13 +39,13 @@ void handleSetTime()
 
 void startWifi()
 {
-  WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  //WiFi.mode(WIFI_AP);
+  // WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(ssid);
 
   dnsServer.setTTL(300);
   dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
-  dnsServer.start(DNS_PORT, "www.pillbox.com", apIP);
+  dnsServer.start(DNS_PORT, "www.pillbox.com", WiFi.softAPIP());
 
   server.on("/", HTTP_GET, handleRoot); // Call the 'handleRoot' function when a client requests URI "/"
   server.on("/confirm", HTTP_POST, handleSetTime);

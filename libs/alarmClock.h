@@ -43,7 +43,6 @@ void alarmClock::set(short indx, short h, short m)
     default:
         alarmDat[indx].target = tempTarget;
         alarmDat[indx].state = RUN;
-        sort();
         break;
     }
 }
@@ -89,10 +88,7 @@ unsigned long alarmClock::update(short indx)
         if (alarmDat[indx].target >= alarmDat[RTCINDX].current) // check if alarm expires
             alarmDat[indx].current = alarmDat[indx].target - alarmDat[RTCINDX].current;
         else // when the alarm expires
-        {
             alarmDat[indx].state = alarmDat[indx].state == RUN ? EXPI : alarmDat[indx].state;
-            sort(); // sort the alarm so that the next alarm is ready when needed
-        }
         break;
     }
 }
@@ -100,7 +96,7 @@ unsigned long alarmClock::update(short indx)
 void alarmClock::sort()
 {
     unsigned long minTime(DAYMILLIS), // store closest alarm time
-        secMin{};            // store second closest alarm time
+        secMin{};                     // store second closest alarm time
     minIndx = prevIndx = 0;           // initialise 2 vars, will remain 0 if no active alarms present
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 1st for-loop: find closest alarm to run
@@ -143,7 +139,7 @@ void alarmClock::scanRefresh()
 }
 
 #if defined(NODEMCU)
-void ICACHE_RAM_ATTR ackno()
+IRAM_ATTR void ackno()
 {
     for (short i = 1; i < arrElem(alarm.alarmDat); ++i)
         alarm.alarmDat[i].state = alarm.alarmDat[i].state == alarm.EXPI ? alarm.ACK : alarm.alarmDat[i].state;

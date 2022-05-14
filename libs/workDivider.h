@@ -5,6 +5,8 @@
 #include "display.h"
 #include "blinkLed.h"
 
+constexpr short threadNo(5);
+
 class workDivider
 {
 public:
@@ -14,28 +16,33 @@ public:
 
 void workDivider::doWork()
 {
-    cycleNo = cycleNo > 3 ? 0 : cycleNo;
+    cycleNo = cycleNo > threadNo ? 0 : cycleNo;
     switch (cycleNo)
     {
     case 0:
         alarm.update(RTCINDX);
-        alarm.scanRefresh();
         break;
 
     case 1:
+        alarm.scanRefresh();
+        break;
+
+    case 2:
         if (alarm.isExpire())
             led.update();
         else
             led.cleanUp();
-
-        break;
-
-    case 2:
-        alarm.update(alarm.minIndx);
-        alarm.sort();
         break;
 
     case 3:
+        alarm.update(alarm.minIndx);
+        break;
+
+    case 4:
+        alarm.sort();
+        break;
+
+    case 5:
         screen.refresh();
         break;
 
