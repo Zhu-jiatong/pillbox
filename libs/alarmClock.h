@@ -18,7 +18,7 @@ public:
         unsigned long current{};
         long target{};
         states state{};
-    } alarmDat[9];
+    } alarmDat[noOfAlarm + 1];
     unsigned long rawMillis{};
     short minIndx{}, prevIndx{};
     void set(short indx, short h, short m);
@@ -122,20 +122,16 @@ bool alarmClock::isExpire()
 {
     bool temp(false);
     for (short i = 1; i < arrElem(alarmDat); ++i)
-    {
         if (alarmDat[i].state == EXPI)
             temp = true;
-    }
     return temp;
 }
 
 void alarmClock::scanRefresh()
 {
     for (short i = 1; i < arrElem(alarmDat); ++i)
-    {
         if (alarmDat[i].target >= alarmDat[RTCINDX].current)
             alarmDat[i].state = RUN;
-    }
 }
 
 #if defined(NODEMCU)

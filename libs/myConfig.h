@@ -9,7 +9,7 @@
 // pins and hardware
 constexpr auto lcdAddr(0x27);
 constexpr auto DHTTYPE(22); // DHT22
-constexpr auto noOfAlarm(8);
+constexpr auto noOfAlarm(5);
 constexpr auto ledPin(LED_BUILTIN);
 
 #if defined(NANO_EVERY)

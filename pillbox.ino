@@ -1,6 +1,7 @@
 #include "libs\alarmClock.h"
 #include "libs\hardwareSetup.h"
 #include "libs\workDivider.h"
+#include "libs\webPage.h"
 
 #if defined(NODEMCU)
 #include "libs\espConfig.h"
@@ -9,6 +10,7 @@
 void setup()
 {
     hardwareInit();
+    constructWebpage();
     startWifi();
 }
 
