@@ -100,22 +100,18 @@ void alarmClock::sort()
     minIndx = prevIndx = 0;           // initialise 2 vars, will remain 0 if no active alarms present
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 1st for-loop: find closest alarm to run
-    {
-        if (alarmDat[i].target != 0 && alarmDat[i].target < minTime && alarmDat[i].state == RUN)
+        if (alarmDat[i].target && alarmDat[i].target < minTime && alarmDat[i].state == RUN)
         {
             minTime = alarmDat[i].target;
             minIndx = i;
         }
-    }
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm
-    {
         if (alarmDat[i].target && alarmDat[i].target > secMin && alarmDat[i].state != RUN)
         {
             secMin = alarmDat[i].target;
             prevIndx = i;
         }
-    }
 }
 
 bool alarmClock::isExpire()

@@ -9,7 +9,7 @@ class display
 {
 public:
     void refresh();
-    void progressBar(short ln, unsigned long max, unsigned long pos);
+    void progressBar(short ln, unsigned long &max, unsigned long &pos);
 } screen;
 
 void display::refresh()
@@ -41,32 +41,28 @@ void display::refresh()
     lcd.print(r3);
 }
 
-void display::progressBar(short ln, unsigned long max, unsigned long pos)
+void display::progressBar(short ln, unsigned long &max, unsigned long &pos)
 {
     if (max)
     {
-        double factor = max / 100.0;
+        float factor = max / 100.0;
         unsigned long percent = pos / factor;
         unsigned long number = percent / 5;
         unsigned long remainder = percent % 5;
-        if (number > 0)
-        {
+        if (number)
             for (int j(0); j < number; ++j)
             {
                 lcd.setCursor(j, ln);
                 lcd.write(5);
             }
-        }
         lcd.setCursor(number, ln);
         lcd.write(remainder);
         if (number < 20)
-        {
             for (unsigned long j(number + 1); j <= 20; ++j)
             {
                 lcd.setCursor(j, ln);
                 lcd.write(0);
             }
-        }
     }
     else
     {
