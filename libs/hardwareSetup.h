@@ -8,9 +8,6 @@
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(lcdAddr, 20, 4); // LCD 1, bridge NONE
 
-#include <DHT.h>
-DHT dht(DHTPIN, DHTTYPE);
-
 void lcdSetup()
 {
     lcd.init();
@@ -33,7 +30,6 @@ void hardwareInit()
 #endif // DEBUG_MODE
 
     lcdSetup();
-    dht.begin();
     attachInterrupt(digitalPinToInterrupt(buttonPin), ackno, RISING);
 }
 

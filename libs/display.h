@@ -15,17 +15,14 @@ public:
 
 void display::refresh()
 {
-    String l1{"Prev: " + String(alarm.prevIndx)};
     lcd.setCursor(0, 0);
-    lcd.print(l1);
+    lcd.print("Prev: " + String(alarm.prevIndx));
 
-    String l2{"Next: " + String(alarm.minIndx)};
     lcd.setCursor(0, 1);
-    lcd.print(l2);
+    lcd.print("Next: " + String(alarm.minIndx));
 
-    String l3{alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "00:00:00"};
     lcd.setCursor(0, 2);
-    lcd.print(l3);
+    lcd.print(alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "00:00:00");
 
     unsigned long barMax = alarm.minIndx ? (alarm.prevIndx ? alarm.alarmDat[alarm.minIndx].target - alarm.alarmDat[alarm.prevIndx].target : alarm.alarmDat[alarm.minIndx].target) : 0;
     progressBar(3, barMax, alarm.alarmDat[alarm.minIndx].current); // show pregress bar of current alarm at bottom of screen
@@ -33,13 +30,11 @@ void display::refresh()
     lcd.setCursor(11, 0); // r1
     lcd.print(alarm.toStr(alarm.alarmDat[RTCINDX].current));
 
-    String r2{"left: " + String(alarm.noLeft)};
     lcd.setCursor(11, 1);
-    lcd.print(r2);
+    lcd.print("left: " + String(alarm.noLeft));
 
-    String r3{"WL: " + String(WiFi.softAPgetStationNum() ? "on  " : "pend")};
     lcd.setCursor(11, 2);
-    lcd.print(r3);
+    lcd.print("WL: " + String(WiFi.softAPgetStationNum() ? "on  " : "idle"));
 }
 
 void display::progressBar(short ln, unsigned long &max, unsigned long &pos)
