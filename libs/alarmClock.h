@@ -11,16 +11,17 @@ public:
     {
         RUN,
         EXPI,
-        ACK
+        ACK,
+        IDLE
     };
     struct alarms
     {
         unsigned long current{};
         long target{};
-        states state{};
+        states state{IDLE};
     } alarmDat[noOfAlarm + 1];
     unsigned long rawMillis{};
-    short minIndx{}, prevIndx{};
+    short minIndx{}, prevIndx{}, noLeft{};
     void set(short indx, short h, short m);
     String toStr(unsigned long milli);
     unsigned long toMillis(short h, short m);
@@ -97,13 +98,18 @@ void alarmClock::sort()
 {
     unsigned long minTime(DAYMILLIS), // store closest alarm time
         secMin{};                     // store second closest alarm time
-    minIndx = prevIndx = 0;           // initialise 2 vars, will remain 0 if no active alarms present
+    minIndx = prevIndx = noLeft = 0;  // initialise 2 vars, will remain 0 if no active alarms present
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 1st for-loop: find closest alarm to run
-        if (alarmDat[i].target && alarmDat[i].target < minTime && alarmDat[i].state == RUN)
+        if (alarmDat[i].state == RUN)
         {
-            minTime = alarmDat[i].target;
-            minIndx = i;
+            ++noLeft;
+            alarmDat[i].state = !alarmDat[i].target ? IDLE : alarmDat[i].state;
+            if (alarmDat[i].target && alarmDat[i].target < minTime)
+            {
+                minTime = alarmDat[i].target;
+                minIndx = i;
+            }
         }
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm

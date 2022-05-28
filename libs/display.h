@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "hardwareSetup.h"
 #include "alarmClock.h"
+#include "espConfig.h"
 
 class display
 {
@@ -14,15 +15,15 @@ public:
 
 void display::refresh()
 {
-    String l1 = "Prev: " + String(alarm.prevIndx);
+    String l1{"Prev: " + String(alarm.prevIndx)};
     lcd.setCursor(0, 0);
     lcd.print(l1);
 
-    String l2 = "Next: " + String(alarm.minIndx);
+    String l2{"Next: " + String(alarm.minIndx)};
     lcd.setCursor(0, 1);
     lcd.print(l2);
 
-    String l3 = alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "00:00:00";
+    String l3{alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "00:00:00"};
     lcd.setCursor(0, 2);
     lcd.print(l3);
 
@@ -32,11 +33,11 @@ void display::refresh()
     lcd.setCursor(11, 0); // r1
     lcd.print(alarm.toStr(alarm.alarmDat[RTCINDX].current));
 
-    String r2 = "T: " + String(dht.readTemperature()) + "C";
+    String r2{"left: " + String(alarm.noLeft)};
     lcd.setCursor(11, 1);
     lcd.print(r2);
 
-    String r3 = "H: " + String(dht.readHumidity()) + "%";
+    String r3{"WL: " + String(WiFi.softAPgetStationNum() ? "on  " : "pend")};
     lcd.setCursor(11, 2);
     lcd.print(r3);
 }

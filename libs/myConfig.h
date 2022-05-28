@@ -20,7 +20,8 @@ constexpr auto DHTPIN(6);
 constexpr auto buttonPin(D7);
 constexpr auto DHTPIN(D5);
 constexpr char *ssid = "Pillbox"; // The name of the Wi-Fi network that will be created
-#endif                            // NODEMCU
+char *pwd = nullptr;
+#endif // NODEMCU
 
 // time constants
 constexpr short ledFreq(250);
