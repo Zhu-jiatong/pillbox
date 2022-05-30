@@ -9,7 +9,7 @@
 // pins and hardware
 constexpr auto lcdAddr(0x27);
 constexpr auto noOfAlarm(5);
-constexpr auto ledPin(LED_BUILTIN);
+constexpr auto ledPin(D5);
 
 #if defined(NANO_EVERY)
 constexpr auto buttonPin(5);
