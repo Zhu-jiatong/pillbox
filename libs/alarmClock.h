@@ -102,6 +102,11 @@ void alarmClock::sort()
     minIndx = prevIndx = noLeft = 0; // initialise 2 vars, will remain 0 if no active alarms present
 
     for (short i = 1; i < arrElem(alarmDat); ++i) // 1st for-loop: find closest alarm to run
+    {
+#if defined(NODEMCU)
+        yield();
+#endif // NODEMCU
+
         if (alarmDat[i].state == RUN)
         {
             ++noLeft;
@@ -111,28 +116,46 @@ void alarmClock::sort()
                 minIndx = i;
             }
         }
+    }
     extrem = 0;
     for (short i = 1; i < arrElem(alarmDat); ++i) // 2nd for-loop: find previously expired alarm
+    {
+#if defined(NODEMCU)
+        yield();
+#endif // NODEMCU
+
         if (alarmDat[i].target > extrem && alarmDat[i].state != RUN)
         {
             extrem = alarmDat[i].target;
             prevIndx = i;
         }
+    }
 }
 
 bool alarmClock::isExpire()
 {
     for (short i = 1; i < arrElem(alarmDat); ++i)
+    {
+#if defined(NODEMCU)
+        yield();
+#endif // NODEMCU
+
         if (alarmDat[i].state == EXPI)
             return true;
+    }
     return false;
 }
 
 void alarmClock::scanRefresh()
 {
     for (short i = 1; i < arrElem(alarmDat); ++i)
+    {
+#if defined(NODEMCU)
+        yield();
+#endif // NODEMCU
         if (alarmDat[i].target >= alarmDat[RTCINDX].current)
             alarmDat[i].state = RUN;
+    }
 }
 
 #if defined(NODEMCU)

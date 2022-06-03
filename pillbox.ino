@@ -19,6 +19,5 @@ void loop()
 #if defined(NODEMCU)
     yield();
     dnsServer.processNextRequest();
-    server.handleClient(); // Listen for HTTP requests from clients
-#endif                     // NODEMCU
+#endif // NODEMCU
 }

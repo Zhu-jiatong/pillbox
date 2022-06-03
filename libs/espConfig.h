@@ -8,21 +8,21 @@
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
 
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-ESP8266WebServer server(80); // Create a webserver object that listens for HTTP request on port 80
+AsyncWebServer server(80); // Create a webserver object that listens for HTTP request on port 80
 String webpageCfg{"<head> <title>Pillbox</title></head><body style=\"font-size: 100%; font-size: x-large; font-family: monospace;\"> <table border=\"1\" frame=\"box\" cellpadding=\"10\" style=\"text-align: center; border-collapse: collapse; border: 1px solid darkgray; width: 100%; background-color: beige; font-weight: bolder; font-size: xx-large;\"> <tr> <td>Slot Number</td><td>Alarm Time (hh:mm)</td><td rowspan=\"2\"> <form action=\"/confirm\" method=\"POST\" id=\"setTime\"> <input type=\"submit\" value=\"Submit\" style=\"font-size: xx-large; font-weight: inherit; padding:10%; background-color: forestgreen; font-family: inherit; color: white; border-radius: 10%; border: none;\"/> </form> </td></tr><tr> <td> <select name=\"alarmSlotNo\" style=\"font-size: inherit;\" form=\"setTime\"> <option value=\"0\">Clock (RTC)</option>"};
 String webpageInfo{"<br><table border=\"1\" frame=\"box\" cellpadding=\"10\" style=\"text-align: center; border-collapse: collapse; border: 1px solid darkgray; width: 100%; background-color: beige; font-weight: bolder; font-size: xx-large;\"><tr><td>Slot Number</td><td>Alarm Time (hh:mm:ss)</td><td>Status</td></tr>"};
 String constructWebpageInfo();
-void handleRoot(); // function prototypes for HTTP handlers
-void handleSetTime();
+void handleRoot(AsyncWebServerRequest *request); // function prototypes for HTTP handlers
+void handleSetTime(AsyncWebServerRequest *request);
 
-void handleRoot()
+void handleRoot(AsyncWebServerRequest *request)
 {
-  server.send(200, "text/html", webpageCfg + constructWebpageInfo()); // Send HTTP status 200 (Ok) and send some text to the browser/client
-  server.send(200, "text/html", "</body>");
+  request->send(200, "text/html", webpageCfg + constructWebpageInfo()); // Send HTTP status 200 (Ok) and send some text to the browser/client
 }
-void handleSetTime()
+void handleSetTime(AsyncWebServerRequest *request)
 {
 #if defined(DEBUG_MODE)
   Serial.println(server.arg("alarmSlotNo").toInt());
@@ -30,8 +30,8 @@ void handleSetTime()
   Serial.println(server.arg("alarmM").toInt());
 #endif // DEBUG
 
-  alarm.set(server.arg("alarmSlotNo").toInt(), server.arg("alarmH").toInt(), server.arg("alarmM").toInt());
-  handleRoot();
+  alarm.set(request->arg("alarmSlotNo").toInt(), request->arg("alarmH").toInt(), request->arg("alarmM").toInt());
+  request->redirect("/");
 }
 
 String constructWebpageInfo()
@@ -72,9 +72,8 @@ void startWifi()
 
   server.on("/", HTTP_GET, handleRoot); // Call the 'handleRoot' function when a client requests URI "/"
   server.on("/confirm", HTTP_POST, handleSetTime);
-  server.onNotFound([]()
-                    { server.send(404, "text/plain", "404: Not found"); }); // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
-  server.begin();                                                           // Actually start the server
+  server.onNotFound(handleRoot);
+  server.begin(); // Actually start the server
 }
 
 #endif // ESPCONFIG_h
