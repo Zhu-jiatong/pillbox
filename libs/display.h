@@ -4,28 +4,25 @@
 #include <Arduino.h>
 #include "hardwareSetup.h"
 #include "alarmClock.h"
+#include "espConfig.h"
 
 class display
 {
 public:
-    String l1, l2, l3, r1, r2, r3;
     void refresh();
-    void progressBar(short ln, unsigned long max, unsigned long pos);
+    void progressBar(short ln, unsigned long &max, unsigned long &pos);
 } screen;
 
 void display::refresh()
 {
-    l1 = "Prev: " + String(alarm.prevIndx);
     lcd.setCursor(0, 0);
-    lcd.print(l1);
+    lcd.print("Prev: " + String(alarm.prevIndx));
 
-    l2 = "Next: " + String(alarm.minIndx);
     lcd.setCursor(0, 1);
-    lcd.print(l2);
+    lcd.print("Next: " + String(alarm.minIndx));
 
-    l3 = alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "0";
     lcd.setCursor(0, 2);
-    lcd.print(l3);
+    lcd.print(alarm.minIndx ? alarm.toStr(alarm.alarmDat[alarm.minIndx].current) : "00:00:00");
 
     unsigned long barMax = alarm.minIndx ? (alarm.prevIndx ? alarm.alarmDat[alarm.minIndx].target - alarm.alarmDat[alarm.prevIndx].target : alarm.alarmDat[alarm.minIndx].target) : 0;
     progressBar(3, barMax, alarm.alarmDat[alarm.minIndx].current); // show pregress bar of current alarm at bottom of screen
@@ -33,46 +30,40 @@ void display::refresh()
     lcd.setCursor(11, 0); // r1
     lcd.print(alarm.toStr(alarm.alarmDat[RTCINDX].current));
 
-    r2 = "T: " + String(dht.readTemperature()) + "C";
     lcd.setCursor(11, 1);
-    lcd.print(r2);
+    lcd.print("left: " + String(alarm.noLeft));
 
-    r3 = "H: " + String(dht.readHumidity()) + "%";
     lcd.setCursor(11, 2);
-    lcd.print(r3);
+    lcd.print("WL: " + String(WiFi.softAPgetStationNum() ? "on  " : "idle"));
 }
 
-void display::progressBar(short ln, unsigned long max, unsigned long pos)
+void display::progressBar(short ln, unsigned long &max, unsigned long &pos)
 {
     if (max)
     {
-        double factor = max / 100.0;
+        float factor = max / 100.0;
         unsigned long percent = pos / factor;
         unsigned long number = percent / 5;
         unsigned long remainder = percent % 5;
-        if (number > 0)
-        {
+        if (number)
             for (int j(0); j < number; ++j)
             {
                 lcd.setCursor(j, ln);
                 lcd.write(5);
             }
-        }
         lcd.setCursor(number, ln);
         lcd.write(remainder);
         if (number < 20)
-        {
             for (unsigned long j(number + 1); j <= 20; ++j)
             {
                 lcd.setCursor(j, ln);
                 lcd.write(0);
             }
-        }
     }
     else
     {
         lcd.setCursor(0, ln);
-        lcd.print("Nice, all done");
+        lcd.print("Nice, all cleared :)");
     }
 }
 
