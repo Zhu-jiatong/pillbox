@@ -39,32 +39,21 @@ void display::refresh()
 
 void display::progressBar(short ln, unsigned long &max, unsigned long &pos)
 {
+    lcd.setCursor(0, ln);
     if (max)
     {
-        float factor = max / 100.0;
-        unsigned long percent = pos / factor;
-        unsigned long number = percent / 5;
-        unsigned long remainder = percent % 5;
+        short percent = pos / (max / 100.0);
+        short number = percent / 5;
         if (number)
-            for (int j(0); j < number; ++j)
-            {
-                lcd.setCursor(j, ln);
+            for (short i(0); i < number; ++i)
                 lcd.write(5);
-            }
-        lcd.setCursor(number, ln);
-        lcd.write(remainder);
+        lcd.write(percent % 5);
         if (number < 20)
-            for (unsigned long j(number + 1); j <= 20; ++j)
-            {
-                lcd.setCursor(j, ln);
+            for (short i(number + 1); i < 20; ++i)
                 lcd.write(0);
-            }
     }
     else
-    {
-        lcd.setCursor(0, ln);
         lcd.print("Nice, all cleared :)");
-    }
 }
 
 #endif // DISPLAY_h

@@ -35,16 +35,12 @@ public:
 void alarmClock::set(short indx, short h, short m)
 {
     unsigned long tempTarget = toMillis(h, m);
-    switch (indx)
-    {
-    case RTCINDX:
+    if (!indx)
         alarmDat[indx].target = tempTarget - rawMillis;
-        break;
-
-    default:
+    else
+    {
         alarmDat[indx].target = tempTarget;
         alarmDat[indx].state = tempTarget ? RUN : IDLE;
-        break;
     }
 }
 
